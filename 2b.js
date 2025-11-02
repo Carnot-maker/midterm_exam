@@ -197,22 +197,24 @@ if (req.url.endsWith('.css') || req.url.endsWith('.js') || req.url.endsWith('.pn
     // 原因：某些文件是二進制格式（如圖片、字型），不能用文字方式讀取
     // fs.readFile 會以 Buffer 格式讀取文件（可處理任何類型的文件）
     fs.readFile(staticFilePath, (err, content) => {
-
+      
       // 檢查靜態文件是否讀取失敗
       if (err) {
+        const html3 = './index3.ejs';
         // ------------------------------------------
         // 靜態文件不存在 → 顯示 404 錯誤頁面
         // ------------------------------------------
-        
-        // 當靜態資源載入失敗時（例如：請求不存在的文件或網址）
-        // 不直接回傳錯誤訊息，而是顯示友善的 404 錯誤頁面（index3.ejs）
-
-        // 設定 HTTP 狀態碼 404（找不到資源）
-        res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
-
-        // 向客戶端發送 404 錯誤訊息
-        res.end('404 - 找不到文件：');
-
+        fs.readFile(html3 , 'utf8', (ejsErr, template) => {
+          if (ejsErr) { 
+            console.error('讀取失敗:', ejsErr);
+            res.end('404 - 找不到文件：'); // 如果 404 檔也讀不到
+          }
+          res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+          res.end(template);
+          // 當靜態資源載入失敗時（例如：請求不存在的文件或網址）
+          // 不直接回傳錯誤訊息，而是顯示友善的 404 錯誤頁面（index3.ejs）
+          // 設定 HTTP 狀態碼 404（找不到資源）
+          });
       } else {
         // ------------------------------------------
         // 靜態文件讀取成功 → 直接發送文件內容
