@@ -21,21 +21,20 @@
  *   輸出: ["mouse"]
  */
 function getLowStock(products) {
-    // 創造函式getLowStock，參數為products
-    let lowStockItems = [];
-    // 創造空陣列lowStockItems，專門存放庫存少於10的商品名稱
-    for (let i = 0; i < products.length; i++) {
-        // 用for迴圈跑products陣列，每次迴圈i加1
-        if (products[i].stock < 10) {
-            lowStockItems.push(products[i].name);
-        };
-        // 如果products陣列中第i個物件的stock屬性小於10，則把該物件的name屬性加入lowStockItems陣列
-    };
-    console.log("庫存少於 10 的項目：" ,lowStockItems);
-    return lowStockItems;
-};
-getLowStock(products);
 
+  const lowStockNames = []; 
+
+  for (const product of products) {
+
+    if (product.stock < 10) {
+      lowStockNames.push(product.name);
+    }
+  }
+
+  console.log("庫存少於 10 的項目：", lowStockNames);
+
+  return lowStockNames;
+}
 
 
 // ==========================================
@@ -59,35 +58,59 @@ getLowStock(products);
 
 
 function updateStock(products, updates) {
-     // 建立一個函式叫做 updateStock
+  
+  // 1. 建立一個新的空陣列
+  const updatedProducts = [];
 
-    const updatedProducts = products.map(product_i => { // 區塊寫法 - 用大括號{}
-        // XX.map()這裡的 product_i 就是當前正在處理的陣列元素，類似迴圈裡面的 i
-        // 建立一個變數 updatedProducts，專門放更新後的產品陣列
+  // 2. 使用 for...of 迴圈遍歷 products 陣列
+  for (const product of products) {
+    
+    // 3. 取得當前商品的名稱
+    const productName = product.name;
 
-        const productName = product_i.name; // 取得產品名稱name這個key
+    // 4. 從 updates 物件中查找新庫存
+    const newStock = updates[productName];
 
-        const newStock = updates[productName]; // 從「updates」物件中取得新的庫存量，簡單來說就是把Stock抓來更新；還有這裡是類似字典那樣抓個key值，然後取得對應的value值(stock)
-        // 如果「找不到」updates對應的新庫存值，會回傳 undefined
-
-        if (newStock !== undefined) { // 如果 newStock不等於undefined；目前有mouse和monitor兩個產品有新的庫存量，所以他們屬於undefined以外的值
-            return { 
-                ...product_i, stock: newStock // 使用展開運算子 (...) 複製原始物件，然後把 newStock 的值覆寫到新物件的 stock 屬性裡
-            };// 這個 { ... } 本身是匿名物件
-        } else {
-            return { ...product_i };// 回傳的是：原始物件的淺拷貝
-        }
-
-    });// 區塊寫法 - 用大括號{}
-
-
-    updatedProducts.forEach(product => {// .forEach：陣列方法，對陣列中的每個元素執行一次指定的函式
-        console.log(`${product.name} 的庫存： ${product.stock}`);//正在列印每個產品的名稱和庫存量 
-    });
-    return updatedProducts;
-   
+    
+    // 5. 判斷是否需要更新庫存
+    if (newStock !== undefined) {
+      
+      // 5a. 如果需要更新：手動創建一個包含新庫存的「新物件」
+      const newProduct = {
+        name: productName,   
+        stock: newStock      
+      };
+      
+      // 將更新後的物件加入結果陣列
+      updatedProducts.push(newProduct);
+      
+    } else {
+      
+      // 5b. 如果不需要更新：複製原始物件的屬性到一個新物件中
+      const newProduct = {
+        name: product.name,
+        stock: product.stock 
+      };
+      
+      // 將未更新的物件副本加入結果陣列
+      updatedProducts.push(newProduct);
+    }
+  }
+  
+  // 6. 遍歷更新後的陣列，並印出結果
+  // ********** 核心修改：將箭頭函式替換成傳統的匿名函式 **********
+  // 傳統函式寫法：function (參數) { 程式碼區塊 }
+  updatedProducts.forEach(function (product) {
+      // 在此函式內部，product 依然代表陣列中的每個元素
+      
+      // 使用「+」運算子來連接字串和變數，避免使用模板字串 (${})
+      console.log(product.name + " 的庫存： " + product.stock);
+  });
+  // *********************************************************
+  
+  // 7. 函式回傳更新後的陣列
+  return updatedProducts;
 }
-updateStock(products, updates);
 
 // ==========================================
 // 測試範例
@@ -251,3 +274,6 @@ if (typeof module !== 'undefined' && module.exports) {
    - 優點：程式碼簡潔、易讀
 
 */
+
+getLowStock(products);
+updateStock(products, updates);
